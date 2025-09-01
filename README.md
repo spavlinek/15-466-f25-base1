@@ -1,6 +1,6 @@
-# (TODO: your game's title)
+# Busy Bee
 
-Author: (TODO: your name)
+Author: Sara Pavlinek
 
 Design: (TODO: In two sentences or fewer, describe what is new and interesting about your game.)
 

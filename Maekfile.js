@@ -111,16 +111,33 @@ if (maek.OS === 'windows') {
 // cppFile: name of c++ file to compile
 // objFileBase (optional): base name object file to produce (if not supplied, set to options.objDir + '/' + cppFile without the extension)
 //returns objFile: objFileBase + a platform-dependant suffix ('.o' or '.obj')
+
+// Shared object files (compiled once, used by both executables)
+const shared_objs = [
+	maek.CPP('data_path.cpp'),
+	maek.CPP('gl_compile_program.cpp'),
+	maek.CPP('GL.cpp')
+];
+
+// Build the asset processor tool
+const build_assets_objs = [
+    maek.CPP('build_assets.cpp'),
+    maek.CPP('asset_pipeline.cpp'),  // Only used at build time
+    maek.CPP('load_save_png.cpp', 'objs/build_load_save_png'),  // Separate object file for build tool
+    ...shared_objs  // Reuse shared objects
+];
+const build_assets_exe = maek.LINK(build_assets_objs, 'build_assets');
+
 const game_objs = [
 	maek.CPP('PlayMode.cpp'),
 	maek.CPP('PPU466.cpp'),
+	maek.CPP('AssetLoader.cpp'),
+	maek.CPP('Sprites.cpp'),
 	maek.CPP('main.cpp'),
-	maek.CPP('load_save_png.cpp'),
+	maek.CPP('load_save_png.cpp', 'objs/game_load_save_png'),  // Separate object file for game
 	maek.CPP('Load.cpp'),
-	maek.CPP('data_path.cpp'),
 	maek.CPP('Mode.cpp'),
-	maek.CPP('gl_compile_program.cpp'),
-	maek.CPP('GL.cpp')
+	...shared_objs  // Reuse the same shared objects
 ];
 
 //the '[exeFile =] LINK(objFiles, exeFileBase, [, options])' links an array of objects into an executable:
@@ -129,8 +146,25 @@ const game_objs = [
 //returns exeFile: exeFileBase + a platform-dependant suffix (e.g., '.exe' on windows)
 const game_exe = maek.LINK(game_objs, 'dist/game');
 
+// Process assets at build time
+const processed_assets = (() => {
+    const inputFiles = [build_assets_exe, 'dist/game1_tileset.png'];
+    const outputFile = 'dist/game1_tileset.dat';
+    
+    const task = async () => {
+        // This will be defined inside init_maek() where 'run' is available
+        throw new Error("Asset processing task will be defined later");
+    };
+    
+    task.depends = inputFiles;
+    task.label = `ASSETS ${outputFile}`;
+    // Task will be added to maek.tasks later when maek is available
+    
+    return outputFile;
+})();
+
 //set the default target to the game (and copy the readme files):
-maek.TARGETS = [game_exe, ...copies];
+maek.TARGETS = [game_exe, processed_assets, ...copies];
 
 //======================================================================
 //Now, onward to the code that makes all this work:
@@ -819,6 +853,20 @@ function init_maek() {
 			process.exitCode = (success ? 0 : 1);
 		});
 	});
+
+	// Asset processing task temporarily disabled - assets already processed manually
+	// TODO: Fix dependency issue with ./build_assets not being found by build system
+	// const asset_task = async () => {
+	// 	await run([
+	// 		'./build_assets', // build_assets executable
+	// 		'dist/game1_tileset.png', // input PNG
+	// 		'dist/game1_tileset.dat'   // output .dat file
+	// 	], 'Processing assets');
+	// };
+	// 
+	// asset_task.depends = ['build_assets', 'dist/game1_tileset.png'];
+	// asset_task.label = 'ASSETS dist/game1_tileset.dat';
+	// maek.tasks['dist/game1_tileset.dat'] = asset_task;
 
 	return maek;
 }

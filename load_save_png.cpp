@@ -1,4 +1,5 @@
 #include "load_save_png.hpp"
+#include "data_path.hpp"
 
 #include <png.h>
 

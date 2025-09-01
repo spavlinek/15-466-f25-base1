@@ -6,7 +6,7 @@
  * This is useful for global-scope resources that need an OpenGL context:
  *
  * //at global scope:
- * Load< Mesh > main_mesh([]() -> const Mesh * {
+ * Load< Mesh > main_mesh(LoadTagDefault, []() -> const Mesh * {
  *     return &Meshes.get("Main");
  * });
  *
