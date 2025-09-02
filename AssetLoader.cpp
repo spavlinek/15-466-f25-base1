@@ -38,7 +38,7 @@ bool AssetLoader::load_assets(const std::string &filename,
                  palettes.begin() + std::min(palettes.size(), palette_table.size()), 
                  palette_table.begin());
         
-        std::cout << "✓ Loaded " << filename << ": " << tiles.size() << " tiles, " << palettes.size() << " palettes" << std::endl;
+        std::cout << "Loaded " << filename << ": " << tiles.size() << " tiles, " << palettes.size() << " palettes" << std::endl;
         return true;
         
     } catch (std::exception const &e) {

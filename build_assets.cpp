@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
         write_chunk("TILE", tiles, &out);      // Magic: "TILE"
         write_chunk("PALT", palettes, &out);   // Magic: "PALT" 
         
-        std::cout << "✓ Generated " << output_file << std::endl;
+        std::cout << "Generated " << output_file << std::endl;
         std::cout << "  - " << tiles.size() << " tiles (" << tiles.size() * sizeof(PPU466::Tile) << " bytes)" << std::endl;
         std::cout << "  - " << palettes.size() << " palettes (" << palettes.size() * sizeof(PPU466::Palette) << " bytes)" << std::endl;
         
